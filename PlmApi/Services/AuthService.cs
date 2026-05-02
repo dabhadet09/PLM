@@ -26,6 +26,9 @@ public class AuthService
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             return null;
 
+        if (!user.IsActive)
+            throw new Exception("Account is on hold.");
+
         return GenerateToken(user);
     }
 

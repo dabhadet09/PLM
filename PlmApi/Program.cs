@@ -59,6 +59,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var inactiveUsers = context.Users.Where(u => !u.IsActive).ToList();
+    foreach (var user in inactiveUsers) user.IsActive = true;
+    context.SaveChanges();
+}
+
 app.UseCors("ReactPolicy");
 app.MapOpenApi();
 app.MapScalarApiReference();

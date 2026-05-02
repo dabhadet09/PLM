@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlmApi.Data;
@@ -28,6 +29,21 @@ public class ReadingsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
         Ok(await _repo.GetAllAsync());
+
+    /// <summary>Returns the UTC timestamp of the most recent reading, or null if no readings exist.</summary>
+    [HttpGet("latest-timestamp")]
+    [AllowAnonymous]
+    public async Task<IActionResult> LatestTimestamp()
+    {
+        var latest = await _context.Readings
+            .OrderByDescending(r => r.Timestamp)
+            .Select(r => (DateTime?)r.Timestamp)
+            .FirstOrDefaultAsync();
+        
+        return Ok(new { 
+            latestTimestamp = latest?.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") 
+        });
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)

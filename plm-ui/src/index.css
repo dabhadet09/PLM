@@ -13,6 +13,15 @@
   --sidebar-width: 260px;
 }
 
+[data-theme='light'] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -355,3 +364,20 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── Disabled buttons ───────────────────────────── */
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Date input dark mode ───────────────────────── */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+/* ── Recharts tooltip override ──────────────────── */
+.recharts-default-tooltip {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+}
+

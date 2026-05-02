@@ -18,11 +18,18 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        var response = _authService.Authenticate(request);
-        if (response == null)
-            return Unauthorized(new { message = "Invalid username or password" });
+        try 
+        {
+            var response = _authService.Authenticate(request);
+            if (response == null)
+                return Unauthorized(new { message = "Invalid username or password" });
 
-        return Ok(response);
+            return Ok(response);
+        }
+        catch (System.Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPost("register")]

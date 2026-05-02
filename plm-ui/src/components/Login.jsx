@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { Activity } from 'lucide-react';
+import { Activity, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [successAnim, setSuccessAnim] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,7 +24,10 @@ const Login = ({ setAuth }) => {
       localStorage.setItem('userRole', res.data.role);
       localStorage.setItem('username', res.data.username);
       setAuth(true);
-      navigate('/dashboard');
+      setSuccessAnim(true);
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     } catch (err) {
       setError('Invalid username or password');
     }
@@ -57,22 +65,45 @@ const Login = ({ setAuth }) => {
             </div>
             
             <Card className="glass-card border-0 p-4">
-              {error && <Alert variant="danger" className="py-2 border-0 bg-danger bg-opacity-25 text-danger">{error}</Alert>}
-              <Form onSubmit={handleLogin}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="text-muted">Email Address</Form.Label>
-                  <Form.Control type="email" pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Please enter a full valid email address (e.g., abc@gmail.com)" className="bg-dark text-light border-secondary py-2" value={username} onChange={(e) => setUsername(e.target.value)} required />
-                </Form.Group>
-                <Form.Group className="mb-4">
-                  <Form.Label className="text-muted">Password</Form.Label>
-                  <Form.Control type="password" className="bg-dark text-light border-secondary py-2" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </Form.Group>
-                <Button variant="primary" type="submit" className="w-100 rounded-pill mb-4 py-2 fw-bold shadow-sm">Sign In</Button>
-                <div className="text-center">
-                  <span className="text-muted">Don't have an account? </span>
-                  <Link to="/register" className="text-primary text-decoration-none fw-medium">Register here</Link>
-                </div>
-              </Form>
+              <AnimatePresence mode="wait">
+                {successAnim ? (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="d-flex flex-column align-items-center justify-content-center py-5"
+                  >
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1, rotate: 360 }}
+                      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    >
+                      <CheckCircle size={64} className="text-success mb-3" />
+                    </motion.div>
+                    <h4 className="text-light fw-bold">Login Successful</h4>
+                    <p className="text-muted">Redirecting to Dashboard...</p>
+                  </motion.div>
+                ) : (
+                  <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    {error && <Alert variant="danger" className="py-2 border-0 bg-danger bg-opacity-25 text-danger">{error}</Alert>}
+                    <Form onSubmit={handleLogin}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="text-muted">Email Address</Form.Label>
+                        <Form.Control type="email" pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Please enter a full valid email address (e.g., abc@gmail.com)" className="bg-dark text-light border-secondary py-2" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                      </Form.Group>
+                      <Form.Group className="mb-4">
+                        <Form.Label className="text-muted">Password</Form.Label>
+                        <Form.Control type="password" className="bg-dark text-light border-secondary py-2" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                      </Form.Group>
+                      <Button variant="primary" type="submit" className="w-100 rounded-pill mb-4 py-2 fw-bold shadow-sm">Sign In</Button>
+                      <div className="text-center">
+                        <span className="text-muted">Don't have an account? </span>
+                        <Link to="/register" className="text-primary text-decoration-none fw-medium">Register here</Link>
+                      </div>
+                    </Form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Card>
           </motion.div>
         </Col>

@@ -8,6 +8,7 @@ public class User
     public string Username { get; set; } = string.Empty; // This will store the email
     public string Password { get; set; } = string.Empty; // Storing hashed password
     public string Role { get; set; } = "Engineer";
+    public bool IsActive { get; set; } = true;
 }
 
 public class LoginRequest
@@ -41,4 +42,11 @@ public class LoginResponse
     public string Username { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }
+}
+
+public class ResetPasswordRequest
+{
+    [Required]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
+    public string NewPassword { get; set; } = string.Empty;
 }
